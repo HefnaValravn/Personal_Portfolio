@@ -1,6 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import '../assets/styles/Contact.scss';
-// import emailjs from '@emailjs/browser';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -16,37 +15,52 @@ function Contact() {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<boolean>(false);
 
-  const form = useRef();
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  const sendEmail = (e: any) => {
+  const sendEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setNameError(name === '');
-    setEmailError(email === '');
-    setMessageError(message === '');
+    const nameEmpty = name.trim() === '';
+    const emailEmpty = email.trim() === '';
+    const messageEmpty = message.trim() === '';
 
-    /* Uncomment below if you want to enable the emailJS */
+    setNameError(nameEmpty);
+    setEmailError(emailEmpty);
+    setMessageError(messageEmpty);
 
-    // if (name !== '' && email !== '' && message !== '') {
-    //   var templateParams = {
-    //     name: name,
-    //     email: email,
-    //     message: message
-    //   };
+    if (nameEmpty || emailEmpty || messageEmpty) return;
 
-    //   console.log(templateParams);
-    //   emailjs.send('service_id', 'template_id', templateParams, 'api_key').then(
-    //     (response) => {
-    //       console.log('SUCCESS!', response.status, response.text);
-    //     },
-    //     (error) => {
-    //       console.log('FAILED...', error);
-    //     },
-    //   );
-    //   setName('');
-    //   setEmail('');
-    //   setMessage('');
-    // }
+    setStatus('sending');
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: '70a8f32f-fb6d-4c0c-a09a-c8d40d053bd2',
+          name: name,
+          email: email,
+          message: message,
+          subject: `Portfolio message from ${name}`,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setStatus('sent');
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -56,11 +70,11 @@ function Contact() {
           <h1>Contact Me</h1>
           <p>Got a project waiting to be realized? Let's collaborate and make it happen!</p>
           <Box
-            ref={form}
             component="form"
             noValidate
             autoComplete="off"
             className='contact-form'
+            onSubmit={sendEmail}
           >
             <div className='form-flex'>
               <TextField
@@ -103,9 +117,20 @@ function Contact() {
               error={messageError}
               helperText={messageError ? "Please enter the message" : ""}
             />
-            <Button variant="contained" endIcon={<SendIcon />} onClick={sendEmail}>
-              Send
+            <Button
+              type="submit"
+              variant="contained"
+              endIcon={<SendIcon />}
+              disabled={status === 'sending'}
+            >
+              {status === 'sending' ? 'Sending…' : 'Send'}
             </Button>
+            {status === 'sent' && (
+              <p className="form-status success">Thanks — your message is on its way. I'll get back to you soon.</p>
+            )}
+            {status === 'error' && (
+              <p className="form-status error">Something went wrong. Try again, or email me directly.</p>
+            )}
           </Box>
         </div>
       </div>
@@ -114,3 +139,4 @@ function Contact() {
 }
 
 export default Contact;
+

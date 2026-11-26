@@ -18,8 +18,58 @@
     color: white;
   }
 
-  fieldset {
+  .MuiInputBase-input,
+  .MuiInputBase-inputMultiline {
+    color: #050f0b;
+  }
+
+  .MuiInputLabel-root {
+    color: rgba(5, 15, 11, 0.7);
+    font-size: 1rem;
+    font-family: 'DomaineDispNar-Medium', sans-serif;
+  }
+
+  .MuiOutlinedInput-root {
     background-color: white;
+    color: #050f0b;
+
+    input,
+    textarea {
+      color: #050f0b !important;
+      -webkit-text-fill-color: #050f0b !important; // beats autofill/disabled overrides
+    }
+  }
+
+  .MuiInputLabel-root.Mui-focused,
+  .MuiInputLabel-root.MuiFormLabel-filled {
+    color: #5000ca;
+  }
+
+  .MuiInputLabel-shrink {
+    transform: translate(14px, -9px) scale(0.75);
+    transform-origin: top left;
+  }
+
+  .MuiFormHelperText-root {
+    color: rgba(5, 15, 11, 0.7);
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(5, 15, 11, 0.4);
+  }
+
+  .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(5, 15, 11, 0.7);
+  }
+
+  .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #5000ca;
+  }
+
+  .MuiInputBase-input::placeholder,
+  .MuiInputBase-inputMultiline::placeholder {
+    color: rgba(5, 15, 11, 0.5);
+    opacity: 1;
   }
 }
 
@@ -46,3 +96,4 @@ form {
   width: 100% !important;
   margin-bottom: 15px !important;
 }
+
